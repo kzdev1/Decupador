@@ -7,6 +7,7 @@ interface TextFieldProps {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
   error?: string
   type?: 'text' | 'url'
+  inputMode?: 'text' | 'decimal'
   placeholder?: string
   required?: boolean
 }
@@ -19,6 +20,7 @@ export function TextField({
   onChange,
   error,
   type = 'text',
+  inputMode,
   placeholder,
   required = false,
 }: TextFieldProps) {
@@ -34,6 +36,7 @@ export function TextField({
         id={id}
         name={id}
         type={type}
+        inputMode={inputMode}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
