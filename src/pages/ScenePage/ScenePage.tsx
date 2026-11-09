@@ -1,5 +1,6 @@
 import { ShotForm } from '../../components/ShotForm/ShotForm'
 import { ShotList } from '../../components/ShotList/ShotList'
+import { StatsPanel } from '../../components/StatsPanel/StatsPanel'
 import { Timeline } from '../../components/Timeline/Timeline'
 import { isHttpUrl } from '../../lib/validation'
 import type { Scene, Shot } from '../../types/scene'
@@ -11,7 +12,7 @@ interface ScenePageProps {
   onBack: () => void
 }
 
-/** Página de uma cena: dados da cena, formulário de plano, linha do tempo e lista de planos. */
+/** Página de uma cena: dados, formulário de plano, linha do tempo, estatísticas e lista de planos. */
 export function ScenePage({
   scene,
   onAddShot,
@@ -20,6 +21,7 @@ export function ScenePage({
 }: ScenePageProps) {
   const safeUrl =
     scene.watchUrl && isHttpUrl(scene.watchUrl) ? scene.watchUrl : null
+  const hasShots = scene.shots.length > 0
 
   return (
     <div className="flex flex-col gap-6">
@@ -53,7 +55,7 @@ export function ScenePage({
         <ShotForm onSubmit={onAddShot} />
       </section>
 
-      {scene.shots.length > 0 && (
+      {hasShots && (
         <section
           aria-labelledby="timeline-title"
           className="flex flex-col gap-4"
@@ -62,6 +64,15 @@ export function ScenePage({
             Linha do tempo
           </h2>
           <Timeline shots={scene.shots} />
+        </section>
+      )}
+
+      {hasShots && (
+        <section aria-labelledby="stats-title" className="flex flex-col gap-4">
+          <h2 id="stats-title" className="text-xl font-semibold">
+            Estatísticas
+          </h2>
+          <StatsPanel shots={scene.shots} />
         </section>
       )}
 
