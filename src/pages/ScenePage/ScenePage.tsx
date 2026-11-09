@@ -1,5 +1,6 @@
 import { ShotForm } from '../../components/ShotForm/ShotForm'
 import { ShotList } from '../../components/ShotList/ShotList'
+import { Timeline } from '../../components/Timeline/Timeline'
 import { isHttpUrl } from '../../lib/validation'
 import type { Scene, Shot } from '../../types/scene'
 
@@ -10,7 +11,7 @@ interface ScenePageProps {
   onBack: () => void
 }
 
-/** Página de uma cena: dados da cena, formulário de plano e lista de planos. */
+/** Página de uma cena: dados da cena, formulário de plano, linha do tempo e lista de planos. */
 export function ScenePage({
   scene,
   onAddShot,
@@ -51,6 +52,18 @@ export function ScenePage({
         </h2>
         <ShotForm onSubmit={onAddShot} />
       </section>
+
+      {scene.shots.length > 0 && (
+        <section
+          aria-labelledby="timeline-title"
+          className="flex flex-col gap-4"
+        >
+          <h2 id="timeline-title" className="text-xl font-semibold">
+            Linha do tempo
+          </h2>
+          <Timeline shots={scene.shots} />
+        </section>
+      )}
 
       <section aria-labelledby="shots-title" className="flex flex-col gap-4">
         <h2 id="shots-title" className="text-xl font-semibold">
