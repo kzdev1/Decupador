@@ -5,7 +5,7 @@ import { ScenePage } from './pages/ScenePage/ScenePage'
 import { ScenesPage } from './pages/ScenesPage/ScenesPage'
 
 function App() {
-  const { scenes, addScene, addShot, removeShot } = useScenes()
+  const { scenes, addScene, addShot, updateShot, removeShot } = useScenes()
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null)
   const selectedScene = scenes.find((scene) => scene.id === selectedSceneId)
 
@@ -21,6 +21,9 @@ function App() {
           <ScenePage
             scene={selectedScene}
             onAddShot={(shot) => addShot(selectedScene.id, shot)}
+            onUpdateShot={(shotId, shot) =>
+              updateShot(selectedScene.id, shotId, shot)
+            }
             onRemoveShot={(shotId) => removeShot(selectedScene.id, shotId)}
             onBack={() => setSelectedSceneId(null)}
           />

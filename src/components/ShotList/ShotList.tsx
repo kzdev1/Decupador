@@ -3,11 +3,18 @@ import { CAMERA_MOVEMENT_LABELS, SHOT_TYPE_LABELS } from '../ShotForm/labels'
 
 interface ShotListProps {
   shots: Shot[]
+  editingShotId: string | null
+  onEdit: (shotId: string) => void
   onRemove: (shotId: string) => void
 }
 
-/** Lista os planos de uma cena, com opção de remover cada um. */
-export function ShotList({ shots, onRemove }: ShotListProps) {
+/** Lista os planos de uma cena, com opção de editar ou remover cada um. */
+export function ShotList({
+  shots,
+  editingShotId,
+  onEdit,
+  onRemove,
+}: ShotListProps) {
   if (shots.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-zinc-600 p-4 text-zinc-300">
@@ -22,7 +29,9 @@ export function ShotList({ shots, onRemove }: ShotListProps) {
       {shots.map((shot, index) => (
         <li
           key={shot.id}
-          className="flex items-center gap-3 rounded-lg bg-zinc-800 p-3"
+          className={`flex items-center gap-3 rounded-lg bg-zinc-800 p-3 ${
+            shot.id === editingShotId ? 'ring-2 ring-sky-400' : ''
+          }`}
         >
           <span
             aria-hidden="true"
@@ -38,18 +47,28 @@ export function ShotList({ shots, onRemove }: ShotListProps) {
               {CAMERA_MOVEMENT_LABELS[shot.movement]} · cor {shot.color}
             </p>
           </div>
-          <button
-            type="button"
-            aria-label={`Remover plano ${index + 1}`}
-            onClick={() => {
-              if (window.confirm(`Remover o plano ${index + 1}?`)) {
-                onRemove(shot.id)
-              }
-            }}
-            className="min-h-11 min-w-11 rounded-lg border border-red-400 px-3 text-sm text-red-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
-          >
-            Remover
-          </button>
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              aria-label={`Editar plano ${index + 1}`}
+              onClick={() => onEdit(shot.id)}
+              className="min-h-11 min-w-11 rounded-lg border border-sky-400 px-3 text-sm text-sky-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            >
+              Editar
+            </button>
+            <button
+              type="button"
+              aria-label={`Remover plano ${index + 1}`}
+              onClick={() => {
+                if (window.confirm(`Remover o plano ${index + 1}?`)) {
+                  onRemove(shot.id)
+                }
+              }}
+              className="min-h-11 min-w-11 rounded-lg border border-red-400 px-3 text-sm text-red-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            >
+              Remover
+            </button>
+          </div>
         </li>
       ))}
     </ol>

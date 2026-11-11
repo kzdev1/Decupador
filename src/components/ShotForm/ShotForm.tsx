@@ -10,6 +10,8 @@ import { CAMERA_MOVEMENT_LABELS, SHOT_TYPE_LABELS } from './labels'
 
 interface ShotFormProps {
   onSubmit: (shot: Omit<Shot, 'id'>) => void
+  initialShot?: Shot
+  onCancel?: () => void
 }
 
 const EMPTY_VALUES: ShotFormValues = {
@@ -29,9 +31,27 @@ const MOVEMENT_OPTIONS = CAMERA_MOVEMENTS.map((value) => ({
   label: CAMERA_MOVEMENT_LABELS[value],
 }))
 
-/** Formulário para anotar um plano. Valida a duração antes de chamar onSubmit. */
-export function ShotForm({ onSubmit }: ShotFormProps) {
-  const [values, setValues] = useState<ShotFormValues>(EMPTY_VALUES)
+/** Converte um plano salvo nos valores de texto que o formulário usa. */
+function toFormValues(shot: Shot): ShotFormValues {
+  return {
+    duration: String(shot.duration).replace('.', ','),
+    type: shot.type,
+    movement: shot.movement,
+    color: shot.color,
+  }
+}
+
+/**
+ * Formulário para anotar ou editar um plano.
+ * Com initialShot abre preenchido (modo edição); sem ele, abre vazio (modo novo).
+ * Os valores iniciais só valem na primeira vez: para trocar de plano, quem usa
+ * o componente deve mudar a prop key.
+ */
+export function ShotForm({ onSubmit, initialShot, onCancel }: ShotFormProps) {
+  const isEditing = initialShot !== undefined
+  const [values, setValues] = useState<ShotFormValues>(
+    initialShot ? toFormValues(initialShot) : EMPTY_VALUES,
+  )
   const [errors, setErrors] = useState<ShotFormErrors>({})
 
   function handleChange(field: 'duration' | 'color') {
@@ -53,7 +73,7 @@ export function ShotForm({ onSubmit }: ShotFormProps) {
       movement: values.movement,
       color: values.color,
     })
-    setValues(EMPTY_VALUES)
+    if (!isEditing) setValues(EMPTY_VALUES)
   }
 
   return (
@@ -105,12 +125,23 @@ export function ShotForm({ onSubmit }: ShotFormProps) {
           className="h-11 w-full cursor-pointer rounded-lg border border-zinc-600 bg-zinc-800 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
         />
       </div>
-      <button
-        type="submit"
-        className="min-h-11 rounded-lg bg-sky-400 px-4 font-semibold text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-      >
-        Adicionar plano
-      </button>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <button
+          type="submit"
+          className="min-h-11 flex-1 rounded-lg bg-sky-400 px-4 font-semibold text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          {isEditing ? 'Salvar alterações' : 'Adicionar plano'}
+        </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="min-h-11 rounded-lg border border-zinc-500 px-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+          >
+            Cancelar
+          </button>
+        )}
+      </div>
     </form>
   )
 }

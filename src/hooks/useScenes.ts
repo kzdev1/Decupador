@@ -37,18 +37,34 @@ export function useScenes() {
     )
   }
 
-  function removeShot(sceneId: string, shotId: string) {
+  function updateShot(
+    sceneId: string,
+    shotId: string,
+    data: Omit<Shot, 'id'>,
+  ) {
     setScenes((current) =>
       current.map((scene) =>
         scene.id === sceneId
           ? {
               ...scene,
-              shots: scene.shots.filter((shot) => shot.id !== shotId),
+              shots: scene.shots.map((shot) =>
+                shot.id === shotId ? { ...shot, ...data } : shot,
+              ),
             }
           : scene,
       ),
     )
   }
 
-  return { scenes, addScene, addShot, removeShot }
+  function removeShot(sceneId: string, shotId: string) {
+    setScenes((current) =>
+      current.map((scene) =>
+        scene.id === sceneId
+          ? { ...scene, shots: scene.shots.filter((shot) => shot.id !== shotId) }
+          : scene,
+      ),
+    )
+  }
+
+  return { scenes, addScene, addShot, updateShot, removeShot }
 }
